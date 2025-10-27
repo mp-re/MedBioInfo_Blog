@@ -1,0 +1,10 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/Nextflow/index.html",
+      "/posts/Environment_control/index.html",
+      "/posts/Git_and_Github/index.html"
+    ]
+  }
+]

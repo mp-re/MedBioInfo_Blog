@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "The blog is mainly about things I have learned in MedBioInfo program."
+  },
+  {
+    "objectID": "posts/Nextflow/index.html",
+    "href": "posts/Nextflow/index.html",
+    "title": "Nextflow",
+    "section": "",
+    "text": "Data processing and analysis often include multiple steps that are written in separate scripts. To complete the full process, we need to run the scripts one by one in a correct order, which could be quite inefficient and inconvenient. Workflow manager aims to target this kind of problems by connecting different steps of the workflow in the same framework and building a pipeline. With a workflow manager, we can easily execute the full pipeline from the beginning or rerun from a specific step using a single command. Worlflow managers also make it easier to share pipelines and reproduce the results.\nnextflow and snakemake are two workflow managers that are often used in the field."
+  },
+  {
+    "objectID": "posts/Nextflow/index.html#introduction-to-workflow-manager",
+    "href": "posts/Nextflow/index.html#introduction-to-workflow-manager",
+    "title": "Nextflow",
+    "section": "",
+    "text": "Data processing and analysis often include multiple steps that are written in separate scripts. To complete the full process, we need to run the scripts one by one in a correct order, which could be quite inefficient and inconvenient. Workflow manager aims to target this kind of problems by connecting different steps of the workflow in the same framework and building a pipeline. With a workflow manager, we can easily execute the full pipeline from the beginning or rerun from a specific step using a single command. Worlflow managers also make it easier to share pipelines and reproduce the results.\nnextflow and snakemake are two workflow managers that are often used in the field."
+  },
+  {
+    "objectID": "posts/Nextflow/index.html#nextflow",
+    "href": "posts/Nextflow/index.html#nextflow",
+    "title": "Nextflow",
+    "section": "Nextflow",
+    "text": "Nextflow\n\n1. Coding lanauge\n\n1.1 Process and Channels\n\nNextflow is a Domain Specific Language (DSL) implemented as an extension of the Groovy programming language. process and channel are two major parts of a nextflow script.\nprocess defines the block where codes are being executed.\nEach process can be written in any scripting language that can be executed by the Linux platform (Bash, Perl, Ruby, Python, etc.). This is done in the script part of the process.\nchannel defines the input and output of the process\n\n\n\n\nChannels and Process\n\n\nThe following graph shows how Nextflow process raw data through fastqc and multiqc.\nSource: Software carpentries\n\n\n\nA nextflow example of QC\n\n\n\n\n1.2 Example script\n\nBelow is an example of a nextflow script:\n\n\n#!/usr/bin/env nextflow\n\nparams.greeting = 'Hello world!'\ngreeting_ch = Channel.of(params.greeting)\n\nprocess SPLITLETTERS {\n    input:\n    val x\n\n    output:\n    path 'chunk_*'\n\n    script:\n    \"\"\"\n    printf '$x' | split -b 6 - chunk_\n    \"\"\"\n}\n\nprocess CONVERTTOUPPER {\n    input:\n    path y\n\n    output:\n    stdout\n\n    script:\n    \"\"\"\n    cat $y | tr '[a-z]' '[A-Z]' \n    \"\"\"\n}\n\nworkflow {\n    letters_ch = SPLITLETTERS(greeting_ch)\n    results_ch = CONVERTTOUPPER(letters_ch.flatten())\n    results_ch.view{ it }\n}\n\n\nparams.greeting: Hold the parameters that can be used as input to the pipeline. Prefix params indicates the variable is a parameter.\ngreeting_ch: Set up the input channel using parameter params.greeting.\nprocess SPLITLETTERS: Define a executable process named SPLITLETTERS. A process mainly includes input, output and script.\ninput: Define the input to process. The input can be values (val), files (path) or other qualifiers. Here val x indicates that we assign a value as to a variable named x, which will be used as input in process.\noutput: Define the output of a process. Here path 'chunk_*' indicates the process to expect an output file (path), with a filename starting with “chunk_”, as output from the script. The process sends the output as a channel.\nworkflow: This is the block where we put everything together. For example, in letters_ch = SPLITLETTERS(greeting_ch) we take input from channel greeting_ch, go through process SPLITLETTERS and output in channel letters_ch (Note that there are files in this channel because the output in process SPLITLETTERS is defined by path).\n\n\n\n\n2. Execution\n\n2.1 Run script\nNextflow script can be run directly:\n\n# with pixi environment\npixi run nextflow run hello.nf\n\n# without pixi\nnextflow run hello.nf\n\nThe output on the screen will show the status of each process:\n\n N E X T F L O W   ~  version 25.04.7\n\nLaunching `hello.nf` [jolly_faraday] DSL2 - revision: f5e335f983\n\nexecutor &gt;  local (3)\n[96/fd5f07] SPLITLETTERS (1)   [100%] 1 of 1 ✔\n[7e/dad424] CONVERTTOUPPER (2) [100%] 2 of 2 ✔\nHELLO \nWORLD!\n\n\n\n2.2 Modify and resume\nAfter the first run of nextflow, the output of each process will be store in nextflow. If we modify one process, we can use parameter -resume to rerun the pipeline starting from the modified process.\nFor example we make the following changes in process CONVERTTOUPPER:\n\nprocess CONVERTTOUPPER {\n\n    input:\n    path y\n\n    output:\n    stdout\n\n    script:\n    \"\"\"\n    rev $y\n    \"\"\"\n}\n\nThen we can use the following command to resume:\n\npixi run nextflow run hello.nf -resume\n\n\n\n2.3 Input parameters from outside of the script\nIn the example script we define a parameter para.greeting. The default value of this parameter is ‘Hello world!’, but we can also change this vaule by specifying in command line:\n\npixi run nextflow run hello.nf -resume --greeting 'Bonjour le monde!'\n\nHere we change the content of para.greeting into ‘Bonjour le monde!’\n\n\n2.4 Clean up Nextflow\nCheck out what you have run in a nextflow directory:\n\npixi run nextflow log\n\nClean up all the project cache and the work directories:\n\npixi run nextflow clean\n\nClean up all runs before the named run and forces the clean up:\n\npixi run nextflow clean -before &lt;RUN NAME&gt; -f"
+  },
+  {
+    "objectID": "posts/Environment_control/index.html",
+    "href": "posts/Environment_control/index.html",
+    "title": "Environment Control",
+    "section": "",
+    "text": "A coding environment usually includes all the packages and software tools with specific version that you use for coding. Environment control is extremely important for the reproducibility of data analysis because using a different version of certain package could lead to changes in results or even corrupt the whole analysis pipeline. Based on this fact, it is always recommended to set up a new environment first at the start of a project and put all the analysis in the same environment."
+  },
+  {
+    "objectID": "posts/Environment_control/index.html#introduction-to-environment-control",
+    "href": "posts/Environment_control/index.html#introduction-to-environment-control",
+    "title": "Environment Control",
+    "section": "",
+    "text": "A coding environment usually includes all the packages and software tools with specific version that you use for coding. Environment control is extremely important for the reproducibility of data analysis because using a different version of certain package could lead to changes in results or even corrupt the whole analysis pipeline. Based on this fact, it is always recommended to set up a new environment first at the start of a project and put all the analysis in the same environment."
+  },
+  {
+    "objectID": "posts/Environment_control/index.html#pixi-a-tool-for-environment-control",
+    "href": "posts/Environment_control/index.html#pixi-a-tool-for-environment-control",
+    "title": "Environment Control",
+    "section": "Pixi: a tool for environment control",
+    "text": "Pixi: a tool for environment control\nPixi is a useful tool to help create a coding environment (which exists as a folder) and install packages we need in this environment.\n\n1. Installation\n\nDownload the installation script from pixi website and run.\nRemember to source the start up file to update ~/.bashrc file so that you can use pixi commands.\n\n\ncurl -fsSL https://pixi.sh/install.sh | sh\n\nsource ~/.bashrc # in Linux\nsource ~/.zshrc # in Mac\n\n\n\n2. Set up evironment\n\nA folder name_environment_folder will be created with this command line. All the operation under this folder will share the same coding environment.\nFlag -c indicates channels which we download and install dependencies (or packages) from. Note that conda-forge must be placed before bioconda.\n\n\npixi init name_environment_folder -c conda-forge -c bioconda\n\n\n2.1 Information about a pixi environment\n\nA pixi.toml file is created when we first set up the environment, which includes the basic information about the environment.\nPackages installed in this environment are recorded in [dependencies] of the file.\nThe following is an example of this file:\n\n\n[workspace]\nchannels = [\"conda-forge\", \"bioconda\"]\nname = \"pixi_training\"\nplatforms = [\"linux-64\"]\nversion = \"0.1.0\"\n\n[tasks]\n\n[dependencies]\nquarto = \"&gt;=1.8.25,&lt;2\"\n\n\n\n2.2 Add dependencies\n\nTake installing Quarto as an example, a pixi.lock file will be create to record the process of installation.\nDependencies are installed in .pixi/envs under environment folder.\n\n\npixi add quarto\n\n\n\n\n3. Run pixi\n\nWe can run pixi command directly:\n\n\npixi run quarto --help\n\n\nor we can start up a shell (it is like activating the evironment) so that we can run commands in a tranditional way without pixi run:\n\n\npixi shell # activate environment\nquarto --help # run normal command without pixi run\nexit # quit"
+  },
+  {
+    "objectID": "posts/Git_and_Github/index.html",
+    "href": "posts/Git_and_Github/index.html",
+    "title": "Git and Github",
+    "section": "",
+    "text": "It is often difficult to keep track of all the changes to codes and files in a long-term project, especially when you have multiple collaborator. One of the best ways to target this problem is to use a proper tool (such as Git and Github) for version control so that you can record the history of modifications and roll back to a specific version whenever it is needed."
+  },
+  {
+    "objectID": "posts/Git_and_Github/index.html#introduction",
+    "href": "posts/Git_and_Github/index.html#introduction",
+    "title": "Git and Github",
+    "section": "",
+    "text": "It is often difficult to keep track of all the changes to codes and files in a long-term project, especially when you have multiple collaborator. One of the best ways to target this problem is to use a proper tool (such as Git and Github) for version control so that you can record the history of modifications and roll back to a specific version whenever it is needed."
+  },
+  {
+    "objectID": "posts/Git_and_Github/index.html#git-and-github",
+    "href": "posts/Git_and_Github/index.html#git-and-github",
+    "title": "Git and Github",
+    "section": "Git and Github",
+    "text": "Git and Github\n\nGit is a version control software that is fully distributed - meaning that each project folder contains the full history of the project. These project folders are also called repositories and can be on several computers, or servers.\nA repository in git is the .git/ folder inside of your directory. This repository tracks all changes made to files in your project and contains your project history. Usually we refer to the git repository as the local repository.\nGithub is a online code hosting platform that is based on git. Here you can store, track and publish code (and code only, do NOT use github for data!). On Github you can collaborate with colleagues and work on projects together.\nA repository in github is also known as a remote directory, which stores the project and revision history in a online host."
+  },
+  {
+    "objectID": "posts/Git_and_Github/index.html#how-git-works",
+    "href": "posts/Git_and_Github/index.html#how-git-works",
+    "title": "Git and Github",
+    "section": "How Git works",
+    "text": "How Git works\nA git project mainly contains three sections:\n\nWorking directory: The folder where you work with all the files in your project. All the modifications you make first happen in this directory.\nStaging area: This section declares which modification in working will be sent to git repository using command line git add\nGit repository: This is .git/ folder under your working directory, which records the modification hisotry of the git project (working directory). Note that Git repsository only retreive information from Staging area. Any change that is not decared in Staging area will not be recorded. The command to update Git repository is git commit.\n\nThe following picture shows the relationship among these three sections:\n\n\n\nGit sections"
+  },
+  {
+    "objectID": "posts/Git_and_Github/index.html#starting-with-git",
+    "href": "posts/Git_and_Github/index.html#starting-with-git",
+    "title": "Git and Github",
+    "section": "Starting with Git",
+    "text": "Starting with Git\n\n1. Initialization\nTo be able to use git, we need to initialize a git repository under your project/working directory:\n\ngit init\n\n\n\n2. Add the first record\nThe newly created git repository is empty, so we need to add the record of the current status of working directory into git repository.\n\n2.1 Declaration in staging area\nThis step declares which file will be committed to git repository.\nNote that you always need to perform this step whenever you want to update git repository.\n\ngit add --all # all files to be committed\n\ngit add [filename] # specify a file to committed\n\n\n\n2.2 Commit to git repository\nCommit your staged content as a new commit snapshot.\n\ngit commit -m “[descriptive message]”\n\n\n\n\n3. Set up remote repository on Github\nNow that we have a local history under .git/, we want to sychronize with a remote repository on Github.\n\n3.1 Connect to Github through SSH\n\nssh -T git@githun.com\n\n\n\n3.2 Link local git repository to the remote one\nCreating a new repository on Github is recommanded then use the following command to set up the link:\n\ngit remote add origin [URL_of_your_github_repository]\n\nNote that you need to have at least one commit in local repository before you can link with the remote repository.\n\n\n3.3 Rename the branch in git repository as main\nThe default branch name when initialized is master, rename it as main.\n\ngit branch -M main\n\n\n\n3.4 Push local branch commits to the remote repository\n\nHere main refers to the local branch we want to push\norigin refers to the name of the remote repository\nuse command git branch -a we can see the remote repository has the branch remotes/origin/main, so by default git push will push the current local branch to the remote branch with the same name.\n\n\ngit push -u origin main\n\n\nThe standard form of push command:\n\n\ngit push REMOTE-NAME BRANCH-NAME\n\n\n\n\n4. Updating repository\n\nBasically we follow the these steps: Staging/declaration-Commit-push.\nyou don´t need to speciffy which branch to push as long as your local branch shares name with one of the remote branches\n\n\ngit add [filename]\ngit commit -m “[descriptive message]”\ngit push\n\n\n\n\nGit commands\n\n\n\n\n5. Working with branches\nSometimes it is good to create a new branch (from the main branch) and make all the changes in new branch first, then merge with the main one.\n\n5.1 List branches\n\ngit branch # show all the local branches\ngit branch -a # flag -a indicates also showing remote branches\n\n\n\n5.2 Create a new branch\n\ngit branch [branch_name]\n\n\n\n5.3 Switch to a branch\nSwitch to another branch and check it out into your working directory.\n\ngit checkout [branch_name]\n\n\n\n5.4 Merge branches\nMerge the specified branch’s history into the current one.\n\ngit merge [branch_name]"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Applied Bioinformatics",
+    "section": "",
+    "text": "Nextflow\n\n\n\ncourse\n\ncode\n\npipeline\n\nnextflow\n\n\n\n\n\n\n\n\n\nOct 8, 2025\n\n\nBaizhen Chen\n\n\n\n\n\n\n\n\n\n\n\n\nEnvironment Control\n\n\n\ncourse\n\ncode\n\npixi\n\n\n\n\n\n\n\n\n\nOct 7, 2025\n\n\nBaizhen Chen\n\n\n\n\n\n\n\n\n\n\n\n\nGit and Github\n\n\n\ncourse\n\ncode\n\ngit\n\ngithub\n\n\n\n\n\n\n\n\n\nOct 6, 2025\n\n\nBaizhen Chen\n\n\n\n\n\nNo matching items"
+  }
+]
