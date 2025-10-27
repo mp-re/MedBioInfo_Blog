@@ -59,6 +59,7 @@ pixi add quarto
 ```
 
 ### 3. Run pixi
+#### 3.1 Basic command
 - We can run pixi command directly:
 ```{bash}
 #| eval: false
@@ -74,6 +75,101 @@ quarto --help # run normal command without pixi run
 exit # quit
 ```
 
+#### 3.2 Example: Run fastqc in pixi environment
+- First set up pixi environment:
+```{bash}
+#| eval: false
+
+pixi init -c conda-forge -c bioconda
+pixi add fastqc
+pixi run fastqc --help
+```
+
+- Run in **SLURM** (Simple Linux Utility for Resource Management) job scheduling system:
+```{bash}
+#| eval: false
+
+# Basic usage
+srun -A project_ID -t 30:00 -n 1 <tool options and commands>
+
+# Adapt for fastqc
+srun -A project_ID -t 15:00 -n 1 fastqc --noextract -o fastqc data/sample_1.fastq.gz data/sample_2.fastq.gz 
+```
+- Note that `project_ID` indicate the project on server which you are a member of.
+
+- Check the project you are a member of:
+```{bash}
+#| eval: false
+
+projinfo
+```
+
+- Run in batch by submitting a `fastqc.sh` script. Here is an example of the script:
+```{bash}
+#| eval: false
+
+#! /bin/bash -l
+#SBATCH -A project_ID
+#SBATCH -t 30:00
+#SBATCH -n 1
+
+fastqc -o ../fastqc --noextract ../data/*fastq.gz
+```
+
+- Use `sbatch` to run the script:
+```{bash}
+#| eval: false
+
+sbatch fastqc.sh 
+```
+
+- Check your job with:
+```{bash}
+#| eval: false
+
+squeue -u <user-name>
+```
+
+### 4. Container
+#### 4.1 Introduction to Container
+Even if we have very convenitent tools to manage our own coding environment, problems could still exist when we try to reproduce analysis of other researchers due to conflicts in program version, software dependencies and operating systems, etc.
+
+- **Container** provides a solution to this kind of problem. Container. Containers are **stand-alone** pieces of software that require a container management tool to run. They are build and exchanged as **container images that specify the contents of the container**, such as the operating system, all dependencies, and software in an isolated environment. The container management tool then takes the images and build the container. These management tools can be run on all operating systems, and since **the container has the operating system within it**, it will run the same in all environments. Container images are easily portable and immutable, so they are stable over time.
+
+- Programs to run Containers: [Docker](https://www.docker.com), [Apptainer](https://apptainer.org), [Podman](https://podman.io).
+
+- Websties for downloading Containers: [Dockerhub](https://hub.docker.com), [Seqera](https://seqera.io/containers/).
+
+#### 4.2 Run Container
+- Download Container images:
+```{bash}
+#| eval: false
+
+# from Dockerhub
+apptainer pull vcftools_0.1.16-1.sif docker://biocontainers/vcftools:v0.1.16-1-deb_cv1
+
+# from Seqera
+apptainer pull vcftools_0.1.17.sif oras://community.wave.seqera.io/library/vcftools:0.1.17--b541aa8d9f9213f9
+```
+
+- Run Container:
+```{bash}
+#| eval: false
+
+apptainer exec vcftools_0.1.17.sif vcftools --version
+```
+
+- Run Container with sbatch:
+```{bash}
+#| eval: false
+
+#! /bin/bash -l
+#SBATCH -A project_ID
+#SBATCH -t 30:00
+#SBATCH -n 1
+
+apptainer exec container_image.sif fastqc -o . --noextract ../data/*fastq.gz
+```
 
 ```{r}
 #| echo: false

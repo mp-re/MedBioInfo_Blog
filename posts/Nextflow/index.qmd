@@ -1,7 +1,7 @@
 ---
 title: "Nextflow"
 author: "Baizhen Chen"
-date: "2025-10-08"
+date: "2025-10-09"
 categories: [course, code, pipeline, nextflow]
 image: "nextflow_logo_light.png"
 ---
