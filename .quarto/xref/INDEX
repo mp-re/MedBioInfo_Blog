@@ -10,5 +10,14 @@
   },
   "about.qmd": {
     "about.html": "068aa8f0"
+  },
+  "posts/Environment_control/index.qmd": {
+    "index.html": "f6997b29"
+  },
+  "posts/Git_and_Github/index.qmd": {
+    "index.html": "bb554008"
+  },
+  "posts/Nextflow/index.qmd": {
+    "index.html": "e9618ad6"
   }
 }

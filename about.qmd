@@ -1,6 +1,6 @@
 ---
 title: "About"
-image: profile.jpg
+image: github_avatar.png
 about:
   template: jolla
   links:
@@ -16,4 +16,4 @@ about:
 
 ---
 
-About this blog
+The blog is mainly about things I have learned in MedBioInfo program.

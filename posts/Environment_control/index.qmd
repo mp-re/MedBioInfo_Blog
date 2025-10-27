@@ -1,0 +1,82 @@
+---
+title: "Environment Control"
+author: "Baizhen Chen"
+date: "2025-10-07"
+categories: [course, code, pixi]
+image: "pixi.png"
+---
+
+## Introduction to environment control
+A coding environment usually includes all the packages and software tools with specific version that you use for coding. Environment control is extremely important for the reproducibility of data analysis because using a different version of certain package could lead to changes in results or even corrupt the whole analysis pipeline. Based on this fact, it is always recommended to set up a new environment first at the start of a project and put all the analysis in the same environment.
+
+## Pixi: a tool for environment control
+Pixi is a useful tool to help create a coding environment (which exists as a folder) and install packages we need in this environment.
+
+### 1. Installation
+- Download the installation script from pixi website and run.
+- Remember to source the start up file to update `~/.bashrc` file so that you can use pixi commands.
+```{bash}
+#| eval: false
+
+curl -fsSL https://pixi.sh/install.sh | sh
+
+source ~/.bashrc # in Linux
+source ~/.zshrc # in Mac
+```
+
+### 2. Set up evironment
+- A folder `name_environment_folder` will be created with this command line. All the operation under this folder will share the same coding environment. 
+- Flag `-c` indicates channels which we download and install dependencies (or packages) from. Note that `conda-forge` must be placed before `bioconda`.
+```{bash}
+#| eval: false
+pixi init name_environment_folder -c conda-forge -c bioconda
+```
+
+#### 2.1 Information about a pixi environment
+- A `pixi.toml` file is created when we first set up the environment, which includes the basic information about the environment. 
+- Packages installed in this environment are recorded in `[dependencies]` of the file.
+- The following is an example of this file:
+```{bash}
+#| eval: false
+[workspace]
+channels = ["conda-forge", "bioconda"]
+name = "pixi_training"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+quarto = ">=1.8.25,<2"
+```
+
+#### 2.2 Add dependencies
+- Take installing Quarto as an example, a `pixi.lock` file will be create to record the process of installation.
+- Dependencies are installed in `.pixi/envs` under environment folder.
+```{bash}
+#| eval: false
+pixi add quarto
+```
+
+### 3. Run pixi
+- We can run pixi command directly:
+```{bash}
+#| eval: false
+
+pixi run quarto --help
+```
+- or we can start up a shell (it is like activating the evironment) so that we can run commands in a tranditional way without `pixi run`:
+```{bash}
+#| eval: false
+
+pixi shell # activate environment
+quarto --help # run normal command without pixi run
+exit # quit
+```
+
+
+```{r}
+#| echo: false
+
+# It is empty block to make sure bash code block could be rendered.
+```
