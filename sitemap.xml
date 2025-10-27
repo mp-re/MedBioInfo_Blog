@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://mp-re.github.io/MedBioInfo_Blog/about.html</loc>
+    <lastmod>2025-10-27T15:55:28.245Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mp-re.github.io/MedBioInfo_Blog/posts/Git_and_Github/index.html</loc>
+    <lastmod>2025-10-27T15:55:28.248Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mp-re.github.io/MedBioInfo_Blog/index.html</loc>
+    <lastmod>2025-10-27T15:55:28.245Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mp-re.github.io/MedBioInfo_Blog/posts/Environment_control/index.html</loc>
+    <lastmod>2025-10-27T15:55:28.245Z</lastmod>
+  </url>
+  <url>
+    <loc>https://mp-re.github.io/MedBioInfo_Blog/posts/Nextflow/index.html</loc>
+    <lastmod>2025-10-27T15:55:28.251Z</lastmod>
+  </url>
+</urlset>
