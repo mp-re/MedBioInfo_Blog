@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "About this blog"
 image: github_avatar.png
 about:
   template: jolla
